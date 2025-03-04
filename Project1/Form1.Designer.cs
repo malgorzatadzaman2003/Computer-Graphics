@@ -39,6 +39,7 @@
             checkedListFuncFilters = new CheckedListBox();
             checkedListConvFilters = new CheckedListBox();
             btnModifyFunctionalFilter = new Button();
+            checkedListNewFuncFilters = new CheckedListBox();
             ((System.ComponentModel.ISupportInitialize)imageBoxOriginal).BeginInit();
             ((System.ComponentModel.ISupportInitialize)imageBoxFiltered).BeginInit();
             SuspendLayout();
@@ -141,7 +142,7 @@
             // 
             // btnModifyFunctionalFilter
             // 
-            btnModifyFunctionalFilter.Location = new Point(631, 65);
+            btnModifyFunctionalFilter.Location = new Point(528, 65);
             btnModifyFunctionalFilter.Name = "btnModifyFunctionalFilter";
             btnModifyFunctionalFilter.Size = new Size(179, 50);
             btnModifyFunctionalFilter.TabIndex = 12;
@@ -149,11 +150,21 @@
             btnModifyFunctionalFilter.UseVisualStyleBackColor = true;
             btnModifyFunctionalFilter.Click += btnModifyFunctionalFilter_Click;
             // 
+            // checkedListNewFuncFilters
+            // 
+            checkedListNewFuncFilters.CheckOnClick = true;
+            checkedListNewFuncFilters.FormattingEnabled = true;
+            checkedListNewFuncFilters.Location = new Point(731, 55);
+            checkedListNewFuncFilters.Name = "checkedListNewFuncFilters";
+            checkedListNewFuncFilters.Size = new Size(190, 70);
+            checkedListNewFuncFilters.TabIndex = 13;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(976, 569);
+            Controls.Add(checkedListNewFuncFilters);
             Controls.Add(btnModifyFunctionalFilter);
             Controls.Add(checkedListConvFilters);
             Controls.Add(checkedListFuncFilters);
@@ -186,5 +197,6 @@
         private CheckedListBox checkedListFuncFilters;
         private CheckedListBox checkedListConvFilters;
         private Button btnModifyFunctionalFilter;
+        private CheckedListBox checkedListNewFuncFilters;
     }
 }

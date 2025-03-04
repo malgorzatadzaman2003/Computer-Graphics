@@ -6,6 +6,9 @@ namespace Project1
     {
         private Bitmap originalImage;
         private Bitmap filteredImage;
+
+        private Dictionary<string, Func<byte, byte>> savedFunctionalFilters = new Dictionary<string, Func<byte, byte>>();
+        private string selectedFunctionalFilter = null;
         public Form1()
         {
             InitializeComponent();
@@ -379,6 +382,12 @@ namespace Project1
 
         private void btnModifyFunctionalFilter_Click(object sender, EventArgs e)
         {
+            if (filteredImage == null)
+            {
+                MessageBox.Show("Please load an image first.");
+                return;
+            }
+
             FunctionalFilterEditor funcFilteEditor = new FunctionalFilterEditor();
             if (funcFilteEditor.ShowDialog() == DialogResult.OK)
             {
@@ -390,5 +399,39 @@ namespace Project1
                 }
             }
         }
+
+        private Bitmap ApplyFunctionalFilter(Bitmap image, float[] lookupTable)
+        {
+            Bitmap filteredImage = new Bitmap(image.Width, image.Height);
+
+            BitmapData srcData = image.LockBits(new Rectangle(0, 0, image.Width, image.Height),
+                                                ImageLockMode.ReadOnly, PixelFormat.Format24bppRgb);
+            BitmapData dstData = filteredImage.LockBits(new Rectangle(0, 0, image.Width, image.Height),
+                                                        ImageLockMode.WriteOnly, PixelFormat.Format24bppRgb);
+
+            int stride = srcData.Stride;
+            byte[] pixelBuffer = new byte[stride * image.Height];
+            byte[] resultBuffer = new byte[stride * image.Height];
+
+            System.Runtime.InteropServices.Marshal.Copy(srcData.Scan0, pixelBuffer, 0, pixelBuffer.Length);
+
+            for (int y = 0; y < image.Height; y++)
+            {
+                for (int x = 0; x < image.Width; x++)
+                {
+                    int index = y * stride + x * 3;
+                    resultBuffer[index] = (byte)lookupTable[pixelBuffer[index]];
+                    resultBuffer[index + 1] = (byte)lookupTable[pixelBuffer[index + 1]];
+                    resultBuffer[index + 2] = (byte)lookupTable[pixelBuffer[index + 2]];
+                }
+            }
+
+            System.Runtime.InteropServices.Marshal.Copy(resultBuffer, 0, dstData.Scan0, resultBuffer.Length);
+            image.UnlockBits(srcData);
+            filteredImage.UnlockBits(dstData);
+
+            return filteredImage;
+        }
+
     }
 }
