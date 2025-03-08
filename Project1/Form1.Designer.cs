@@ -1,6 +1,6 @@
 ﻿namespace Project1
 {
-    partial class Form1
+    partial class Filters
     {
         /// <summary>
         ///  Required designer variable.
@@ -38,26 +38,30 @@
             btnApplyFilter = new Button();
             checkedListFuncFilters = new CheckedListBox();
             checkedListConvFilters = new CheckedListBox();
-            btnModifyFunctionalFilter = new Button();
-            checkedListNewFuncFilters = new CheckedListBox();
+            btnLoadFilter = new Button();
+            pictureBoxFuncGraph = new PictureBox();
+            btnAddPoint = new Button();
+            btnDeletePoint = new Button();
+            btnSaveFilter = new Button();
             ((System.ComponentModel.ISupportInitialize)imageBoxOriginal).BeginInit();
             ((System.ComponentModel.ISupportInitialize)imageBoxFiltered).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)pictureBoxFuncGraph).BeginInit();
             SuspendLayout();
             // 
             // imageBoxOriginal
             // 
-            imageBoxOriginal.Location = new Point(57, 144);
+            imageBoxOriginal.Location = new Point(58, 297);
             imageBoxOriginal.Name = "imageBoxOriginal";
-            imageBoxOriginal.Size = new Size(405, 368);
+            imageBoxOriginal.Size = new Size(590, 590);
             imageBoxOriginal.SizeMode = PictureBoxSizeMode.Zoom;
             imageBoxOriginal.TabIndex = 0;
             imageBoxOriginal.TabStop = false;
             // 
             // btnLoadImage
             // 
-            btnLoadImage.Location = new Point(75, 528);
+            btnLoadImage.Location = new Point(285, 915);
             btnLoadImage.Name = "btnLoadImage";
-            btnLoadImage.Size = new Size(140, 29);
+            btnLoadImage.Size = new Size(117, 42);
             btnLoadImage.TabIndex = 1;
             btnLoadImage.Text = "Load Image";
             btnLoadImage.UseVisualStyleBackColor = true;
@@ -65,18 +69,18 @@
             // 
             // imageBoxFiltered
             // 
-            imageBoxFiltered.Location = new Point(516, 144);
+            imageBoxFiltered.Location = new Point(731, 297);
             imageBoxFiltered.Name = "imageBoxFiltered";
-            imageBoxFiltered.Size = new Size(405, 368);
+            imageBoxFiltered.Size = new Size(590, 590);
             imageBoxFiltered.SizeMode = PictureBoxSizeMode.Zoom;
             imageBoxFiltered.TabIndex = 2;
             imageBoxFiltered.TabStop = false;
             // 
             // btnSaveImage
             // 
-            btnSaveImage.Location = new Point(604, 528);
+            btnSaveImage.Location = new Point(892, 915);
             btnSaveImage.Name = "btnSaveImage";
-            btnSaveImage.Size = new Size(94, 29);
+            btnSaveImage.Size = new Size(117, 42);
             btnSaveImage.TabIndex = 3;
             btnSaveImage.Text = "Save";
             btnSaveImage.UseVisualStyleBackColor = true;
@@ -84,9 +88,9 @@
             // 
             // btnResetImage
             // 
-            btnResetImage.Location = new Point(750, 528);
+            btnResetImage.Location = new Point(1054, 915);
             btnResetImage.Name = "btnResetImage";
-            btnResetImage.Size = new Size(94, 29);
+            btnResetImage.Size = new Size(117, 42);
             btnResetImage.TabIndex = 4;
             btnResetImage.Text = "Reset";
             btnResetImage.UseVisualStyleBackColor = true;
@@ -95,26 +99,26 @@
             // label1
             // 
             label1.AutoSize = true;
-            label1.Location = new Point(75, 22);
+            label1.Location = new Point(127, 55);
             label1.Name = "label1";
-            label1.Size = new Size(140, 20);
+            label1.Size = new Size(146, 20);
             label1.TabIndex = 7;
-            label1.Text = "select function filter";
+            label1.Text = "Select Function Filter";
             // 
             // label2
             // 
             label2.AutoSize = true;
-            label2.Location = new Point(285, 22);
+            label2.Location = new Point(408, 55);
             label2.Name = "label2";
-            label2.Size = new Size(164, 20);
+            label2.Size = new Size(170, 20);
             label2.TabIndex = 8;
-            label2.Text = "select convolution filter";
+            label2.Text = "Select Convolution Filter";
             // 
             // btnApplyFilter
             // 
-            btnApplyFilter.Location = new Point(272, 528);
+            btnApplyFilter.Location = new Point(363, 220);
             btnApplyFilter.Name = "btnApplyFilter";
-            btnApplyFilter.Size = new Size(140, 29);
+            btnApplyFilter.Size = new Size(117, 42);
             btnApplyFilter.TabIndex = 9;
             btnApplyFilter.Text = "Apply Filter";
             btnApplyFilter.UseVisualStyleBackColor = true;
@@ -125,9 +129,9 @@
             checkedListFuncFilters.CheckOnClick = true;
             checkedListFuncFilters.FormattingEnabled = true;
             checkedListFuncFilters.Items.AddRange(new object[] { "Inversion", "Brightness Correction", "Contrast Enhancement", "Gamma Correction" });
-            checkedListFuncFilters.Location = new Point(57, 55);
+            checkedListFuncFilters.Location = new Point(93, 94);
             checkedListFuncFilters.Name = "checkedListFuncFilters";
-            checkedListFuncFilters.Size = new Size(190, 70);
+            checkedListFuncFilters.Size = new Size(209, 92);
             checkedListFuncFilters.TabIndex = 10;
             // 
             // checkedListConvFilters
@@ -135,37 +139,73 @@
             checkedListConvFilters.CheckOnClick = true;
             checkedListConvFilters.FormattingEnabled = true;
             checkedListConvFilters.Items.AddRange(new object[] { "Blur", "Gaussian Blur ", "Sharpen", "Edge Detection ", "Emboss" });
-            checkedListConvFilters.Location = new Point(272, 55);
+            checkedListConvFilters.Location = new Point(389, 94);
             checkedListConvFilters.Name = "checkedListConvFilters";
-            checkedListConvFilters.Size = new Size(190, 70);
+            checkedListConvFilters.Size = new Size(209, 92);
             checkedListConvFilters.TabIndex = 11;
             // 
-            // btnModifyFunctionalFilter
+            // btnLoadFilter
             // 
-            btnModifyFunctionalFilter.Location = new Point(528, 65);
-            btnModifyFunctionalFilter.Name = "btnModifyFunctionalFilter";
-            btnModifyFunctionalFilter.Size = new Size(179, 50);
-            btnModifyFunctionalFilter.TabIndex = 12;
-            btnModifyFunctionalFilter.Text = "Modify Functional Filter";
-            btnModifyFunctionalFilter.UseVisualStyleBackColor = true;
-            btnModifyFunctionalFilter.Click += btnModifyFunctionalFilter_Click;
+            btnLoadFilter.Location = new Point(208, 220);
+            btnLoadFilter.Name = "btnLoadFilter";
+            btnLoadFilter.Size = new Size(117, 42);
+            btnLoadFilter.TabIndex = 14;
+            btnLoadFilter.Text = "Load Filter";
+            btnLoadFilter.UseVisualStyleBackColor = true;
+            btnLoadFilter.Click += btnLoadFilter_Click;
             // 
-            // checkedListNewFuncFilters
+            // pictureBoxFuncGraph
             // 
-            checkedListNewFuncFilters.CheckOnClick = true;
-            checkedListNewFuncFilters.FormattingEnabled = true;
-            checkedListNewFuncFilters.Location = new Point(731, 55);
-            checkedListNewFuncFilters.Name = "checkedListNewFuncFilters";
-            checkedListNewFuncFilters.Size = new Size(190, 70);
-            checkedListNewFuncFilters.TabIndex = 13;
+            pictureBoxFuncGraph.Location = new Point(1425, 466);
+            pictureBoxFuncGraph.Name = "pictureBoxFuncGraph";
+            pictureBoxFuncGraph.Size = new Size(256, 256);
+            pictureBoxFuncGraph.TabIndex = 15;
+            pictureBoxFuncGraph.TabStop = false;
+            pictureBoxFuncGraph.Paint += pictureBoxFuncGraph_Paint;
+            pictureBoxFuncGraph.MouseDown += pictureBoxFuncGraph_MouseDown;
+            pictureBoxFuncGraph.MouseMove += pictureBoxFuncGraph_MouseMove;
+            pictureBoxFuncGraph.MouseUp += pictureBoxFuncGraph_MouseUp;
             // 
-            // Form1
+            // btnAddPoint
+            // 
+            btnAddPoint.Location = new Point(1714, 498);
+            btnAddPoint.Name = "btnAddPoint";
+            btnAddPoint.Size = new Size(117, 42);
+            btnAddPoint.TabIndex = 16;
+            btnAddPoint.Text = "Add Point";
+            btnAddPoint.UseVisualStyleBackColor = true;
+            btnAddPoint.Click += btnAddPoint_Click;
+            // 
+            // btnDeletePoint
+            // 
+            btnDeletePoint.Location = new Point(1714, 569);
+            btnDeletePoint.Name = "btnDeletePoint";
+            btnDeletePoint.Size = new Size(117, 42);
+            btnDeletePoint.TabIndex = 17;
+            btnDeletePoint.Text = "Delete Point";
+            btnDeletePoint.UseVisualStyleBackColor = true;
+            btnDeletePoint.Click += btnDeletePoint_Click;
+            // 
+            // btnSaveFilter
+            // 
+            btnSaveFilter.Location = new Point(1714, 640);
+            btnSaveFilter.Name = "btnSaveFilter";
+            btnSaveFilter.Size = new Size(117, 42);
+            btnSaveFilter.TabIndex = 18;
+            btnSaveFilter.Text = "Save Filter";
+            btnSaveFilter.UseVisualStyleBackColor = true;
+            btnSaveFilter.Click += btnSaveFilter_Click;
+            // 
+            // Filters
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(976, 569);
-            Controls.Add(checkedListNewFuncFilters);
-            Controls.Add(btnModifyFunctionalFilter);
+            ClientSize = new Size(1902, 1033);
+            Controls.Add(btnSaveFilter);
+            Controls.Add(btnDeletePoint);
+            Controls.Add(btnAddPoint);
+            Controls.Add(pictureBoxFuncGraph);
+            Controls.Add(btnLoadFilter);
             Controls.Add(checkedListConvFilters);
             Controls.Add(checkedListFuncFilters);
             Controls.Add(btnApplyFilter);
@@ -176,10 +216,12 @@
             Controls.Add(imageBoxFiltered);
             Controls.Add(btnLoadImage);
             Controls.Add(imageBoxOriginal);
-            Name = "Form1";
-            Text = "Form1";
+            Name = "Filters";
+            StartPosition = FormStartPosition.CenterScreen;
+            Text = "Filters";
             ((System.ComponentModel.ISupportInitialize)imageBoxOriginal).EndInit();
             ((System.ComponentModel.ISupportInitialize)imageBoxFiltered).EndInit();
+            ((System.ComponentModel.ISupportInitialize)pictureBoxFuncGraph).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -196,7 +238,10 @@
         private Button btnApplyFilter;
         private CheckedListBox checkedListFuncFilters;
         private CheckedListBox checkedListConvFilters;
-        private Button btnModifyFunctionalFilter;
-        private CheckedListBox checkedListNewFuncFilters;
+        private Button btnLoadFilter;
+        private PictureBox pictureBoxFuncGraph;
+        private Button btnAddPoint;
+        private Button btnDeletePoint;
+        private Button btnSaveFilter;
     }
 }
