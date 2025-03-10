@@ -41,6 +41,16 @@ namespace Project1
                 filteredImage = new Bitmap(originalImage);
                 imageBoxFiltered.Image = filteredImage;
 
+                for (int i = 0; i < checkedListFuncFilters.Items.Count; i++)
+                {
+                    checkedListFuncFilters.SetItemChecked(i, false);
+                }
+
+                for (int i = 0; i < checkedListConvFilters.Items.Count; i++)
+                {
+                    checkedListConvFilters.SetItemChecked(i, false);
+                }
+
                 InitializeFilterGraph();
                 pictureBoxFuncGraph.Invalidate();
             }
@@ -88,7 +98,7 @@ namespace Project1
                             filteredImage = ApplyBrightness(filteredImage, 50);
                             break;
                         case "Contrast Enhancement":
-                            filteredImage = ApplyContrast(filteredImage, 3f);
+                            filteredImage = ApplyContrast(filteredImage, 1.5f);
                             break;
                         case "Gamma Correction":
                             filteredImage = ApplyGamma(filteredImage, 1.5f);
