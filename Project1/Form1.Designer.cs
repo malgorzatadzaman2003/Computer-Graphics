@@ -43,6 +43,8 @@
             btnAddPoint = new Button();
             btnDeletePoint = new Button();
             btnSaveFilter = new Button();
+            checkedListMedianFilters = new CheckedListBox();
+            textBoxMedian = new TextBox();
             ((System.ComponentModel.ISupportInitialize)imageBoxOriginal).BeginInit();
             ((System.ComponentModel.ISupportInitialize)imageBoxFiltered).BeginInit();
             ((System.ComponentModel.ISupportInitialize)pictureBoxFuncGraph).BeginInit();
@@ -196,12 +198,31 @@
             btnSaveFilter.UseVisualStyleBackColor = true;
             btnSaveFilter.Click += btnSaveFilter_Click;
             // 
+            // checkedListMedianFilters
+            // 
+            checkedListMedianFilters.CheckOnClick = true;
+            checkedListMedianFilters.FormattingEnabled = true;
+            checkedListMedianFilters.Items.AddRange(new object[] { "Median Filter" });
+            checkedListMedianFilters.Location = new Point(678, 105);
+            checkedListMedianFilters.Name = "checkedListMedianFilters";
+            checkedListMedianFilters.Size = new Size(166, 26);
+            checkedListMedianFilters.TabIndex = 19;
+            // 
+            // textBoxMedian
+            // 
+            textBoxMedian.Location = new Point(697, 147);
+            textBoxMedian.Name = "textBoxMedian";
+            textBoxMedian.Size = new Size(125, 27);
+            textBoxMedian.TabIndex = 20;
+            // 
             // Filters
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             AutoScroll = true;
             ClientSize = new Size(1902, 1033);
+            Controls.Add(textBoxMedian);
+            Controls.Add(checkedListMedianFilters);
             Controls.Add(btnSaveFilter);
             Controls.Add(btnDeletePoint);
             Controls.Add(btnAddPoint);
@@ -244,5 +265,7 @@
         private Button btnAddPoint;
         private Button btnDeletePoint;
         private Button btnSaveFilter;
+        private CheckedListBox checkedListMedianFilters;
+        private TextBox textBoxMedian;
     }
 }

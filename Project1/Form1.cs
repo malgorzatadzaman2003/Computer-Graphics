@@ -27,7 +27,7 @@ namespace Project1
                 if (ofd.ShowDialog() == DialogResult.OK)
                 {
                     originalImage = new Bitmap(ofd.FileName);
-                    filteredImage = new Bitmap(originalImage); // Copy for modifications in filtered image
+                    filteredImage = new Bitmap(originalImage); 
                     imageBoxOriginal.Image = originalImage;
                     imageBoxFiltered.Image = filteredImage;
                 }
@@ -49,6 +49,11 @@ namespace Project1
                 for (int i = 0; i < checkedListConvFilters.Items.Count; i++)
                 {
                     checkedListConvFilters.SetItemChecked(i, false);
+                }
+
+                for (int i = 0; i < checkedListMedianFilters.Items.Count; i++)
+                {
+                    checkedListMedianFilters.SetItemChecked(i, false);
                 }
 
                 InitializeFilterGraph();
@@ -86,9 +91,10 @@ namespace Project1
 
             var checkedFuncItems = new List<object>(checkedListFuncFilters.CheckedItems.Cast<object>());
             var checkedConvItems = new List<object>(checkedListConvFilters.CheckedItems.Cast<object>());
+            var checkedMedianItems = new List<object>(checkedListMedianFilters.CheckedItems.Cast<object>());
 
 
-            if (checkedFuncItems.Count > 0 || checkedConvItems.Count > 0)
+            if (checkedFuncItems.Count > 0 || checkedConvItems.Count > 0 || checkedMedianItems.Count > 0)
             {
                 foreach (var item in checkedFuncItems)
                 {
@@ -161,6 +167,18 @@ namespace Project1
                     }
                 }
 
+                foreach (var item in checkedMedianItems)
+                {
+                    string filterName = item.ToString();
+                    switch (filterName)
+                    {
+                        case "Median Filter":
+                            ApplyMedianFilter();
+                            ApplyCustomFilter();
+                            break;
+                    }
+                }
+
                 imageBoxFiltered.Image = filteredImage;
             }
             else if (checkedFuncItems.Count == 0)
@@ -173,39 +191,33 @@ namespace Project1
         {
             Bitmap filteredImage = new Bitmap(image.Width, image.Height);
 
-            // Lock the image data
             BitmapData srcData = image.LockBits(new Rectangle(0, 0, image.Width, image.Height),
                                                 ImageLockMode.ReadOnly, PixelFormat.Format24bppRgb);
             BitmapData dstData = filteredImage.LockBits(new Rectangle(0, 0, image.Width, image.Height),
                                                        ImageLockMode.WriteOnly, PixelFormat.Format24bppRgb);
 
-            int stride = srcData.Stride;
+            int stride = srcData.Stride; 
             byte[] pixelBuffer = new byte[stride * image.Height];
             byte[] resultBuffer = new byte[stride * image.Height];
 
-            // Copy pixel data to buffer
             System.Runtime.InteropServices.Marshal.Copy(srcData.Scan0, pixelBuffer, 0, pixelBuffer.Length);
 
             for (int y = 0; y < image.Height; y++)
             {
                 for (int x = 0; x < image.Width; x++)
                 {
-                    // y * stride → Moves to the start of the y-th row.
-                    // x * 3 → Moves to the x-th pixel in that row(since each pixel takes 3 bytes).
                     int index = y * stride + x * 3;
 
                     byte r = pixelBuffer[index + 2];
                     byte g = pixelBuffer[index + 1];
                     byte b = pixelBuffer[index];
 
-                    // Inversion
                     resultBuffer[index] = (byte)(255 - b);
                     resultBuffer[index + 1] = (byte)(255 - g);
                     resultBuffer[index + 2] = (byte)(255 - r);
                 }
             }
 
-            // Copy the processed data back to the bitmap
             System.Runtime.InteropServices.Marshal.Copy(resultBuffer, 0, dstData.Scan0, resultBuffer.Length);
 
             SetInversionGraph();
@@ -220,7 +232,6 @@ namespace Project1
         {
             Bitmap filteredImage = new Bitmap(image.Width, image.Height);
 
-            // Lock the image data
             BitmapData srcData = image.LockBits(new Rectangle(0, 0, image.Width, image.Height),
                                                 ImageLockMode.ReadOnly, PixelFormat.Format24bppRgb);
             BitmapData dstData = filteredImage.LockBits(new Rectangle(0, 0, image.Width, image.Height),
@@ -230,7 +241,6 @@ namespace Project1
             byte[] pixelBuffer = new byte[stride * image.Height];
             byte[] resultBuffer = new byte[stride * image.Height];
 
-            // Copy pixel data to buffer
             System.Runtime.InteropServices.Marshal.Copy(srcData.Scan0, pixelBuffer, 0, pixelBuffer.Length);
 
             for (int y = 0; y < image.Height; y++)
@@ -243,19 +253,16 @@ namespace Project1
                     byte g = pixelBuffer[index + 1];
                     byte b = pixelBuffer[index];
 
-                    //Applying brightness
                     int newR = Math.Clamp(r + brightnessOffset, 0, 255);
                     int newG = Math.Clamp(g + brightnessOffset, 0, 255);
                     int newB = Math.Clamp(b + brightnessOffset, 0, 255);
 
-                    // Update the result buffer
                     resultBuffer[index + 2] = (byte)newR;
                     resultBuffer[index + 1] = (byte)newG;
                     resultBuffer[index] = (byte)newB;
                 }
             }
 
-            // Copy the processed data back to the bitmap
             System.Runtime.InteropServices.Marshal.Copy(resultBuffer, 0, dstData.Scan0, resultBuffer.Length);
 
             SetBrightnessGraph(brightnessOffset);
@@ -270,7 +277,6 @@ namespace Project1
         {
             Bitmap filteredImage = new Bitmap(image.Width, image.Height);
 
-            // Lock the image data
             BitmapData srcData = image.LockBits(new Rectangle(0, 0, image.Width, image.Height),
                                                 ImageLockMode.ReadOnly, PixelFormat.Format24bppRgb);
             BitmapData dstData = filteredImage.LockBits(new Rectangle(0, 0, image.Width, image.Height),
@@ -280,7 +286,6 @@ namespace Project1
             byte[] pixelBuffer = new byte[stride * image.Height];
             byte[] resultBuffer = new byte[stride * image.Height];
 
-            // Copy pixel data to buffer
             System.Runtime.InteropServices.Marshal.Copy(srcData.Scan0, pixelBuffer, 0, pixelBuffer.Length);
 
             for (int y = 0; y < image.Height; y++)
@@ -293,19 +298,16 @@ namespace Project1
                     byte g = pixelBuffer[index + 1];
                     byte b = pixelBuffer[index];
 
-                    //Applying contrast
                     int newR = Math.Clamp((int)((r - 128) * contrastFactor + 128), 0, 255);
                     int newG = Math.Clamp((int)((g - 128) * contrastFactor + 128), 0, 255);
                     int newB = Math.Clamp((int)((b - 128) * contrastFactor + 128), 0, 255);
 
-                    // Update the result buffer
                     resultBuffer[index + 2] = (byte)newR;
                     resultBuffer[index + 1] = (byte)newG;
                     resultBuffer[index] = (byte)newB;
                 }
             }
 
-            // Copy the processed data back to the bitmap
             System.Runtime.InteropServices.Marshal.Copy(resultBuffer, 0, dstData.Scan0, resultBuffer.Length);
 
             SetContrastGraph(contrastFactor);
@@ -321,13 +323,11 @@ namespace Project1
             Bitmap filteredImage = new Bitmap(image.Width, image.Height);
             byte[] gammaArray = new byte[256];
 
-            // Create gamma lookup table
             for (int i = 0; i < 256; i++)
             {
                 gammaArray[i] = (byte)Math.Clamp((int)(255 * Math.Pow(i / 255.0, gamma)), 0, 255);
             }
 
-            // Lock the image data
             BitmapData srcData = image.LockBits(new Rectangle(0, 0, image.Width, image.Height),
                                                 ImageLockMode.ReadOnly, PixelFormat.Format24bppRgb);
             BitmapData dstData = filteredImage.LockBits(new Rectangle(0, 0, image.Width, image.Height),
@@ -337,7 +337,6 @@ namespace Project1
             byte[] pixelBuffer = new byte[stride * image.Height];
             byte[] resultBuffer = new byte[stride * image.Height];
 
-            // Copy pixel data to buffer
             System.Runtime.InteropServices.Marshal.Copy(srcData.Scan0, pixelBuffer, 0, pixelBuffer.Length);
 
             for (int y = 0; y < image.Height; y++)
@@ -350,14 +349,12 @@ namespace Project1
                     byte g = pixelBuffer[index + 1];
                     byte b = pixelBuffer[index];
 
-                    // Apply gamma correction
                     resultBuffer[index + 2] = gammaArray[r];
                     resultBuffer[index + 1] = gammaArray[g];
                     resultBuffer[index] = gammaArray[b];
                 }
             }
 
-            // Copy the processed data back to the bitmap
             System.Runtime.InteropServices.Marshal.Copy(resultBuffer, 0, dstData.Scan0, resultBuffer.Length);
 
             image.UnlockBits(srcData);
@@ -373,7 +370,6 @@ namespace Project1
 
             Bitmap filteredImage = new Bitmap(image.Width, image.Height);
 
-            // Lock bitmaps for fast pixel access
             BitmapData srcData = image.LockBits(new Rectangle(0, 0, image.Width, image.Height),
                                                 ImageLockMode.ReadOnly,
                                                 PixelFormat.Format24bppRgb);
@@ -385,7 +381,6 @@ namespace Project1
             byte[] pixelBuffer = new byte[stride * image.Height];
             byte[] resultBuffer = new byte[stride * image.Height];
 
-            // Copy pixels from bitmap to array
             System.Runtime.InteropServices.Marshal.Copy(srcData.Scan0, pixelBuffer, 0, pixelBuffer.Length);
 
             for (int y = 0; y < image.Height; y++)
@@ -394,18 +389,17 @@ namespace Project1
                 {
                     float newR = 0, newG = 0, newB = 0;
 
-                    // Apply convolution kernel
                     for (int ky = 0; ky < kernelSize; ky++)
                     {
                         for (int kx = 0; kx < kernelSize; kx++)
                         {
-                            int pixelX = Math.Clamp(x + kx - offset, 0, image.Width - 1) * 3; // Clamp to avoid out-of-bounds
+                            int pixelX = Math.Clamp(x + kx - offset, 0, image.Width - 1) * 3; 
                             int pixelY = Math.Clamp(y + ky - offset, 0, image.Height - 1) * stride;
                             int index = pixelY + pixelX;
 
-                            newB += pixelBuffer[index] * kernel[ky, kx];      // Blue
-                            newG += pixelBuffer[index + 1] * kernel[ky, kx];  // Green
-                            newR += pixelBuffer[index + 2] * kernel[ky, kx];  // Red
+                            newB += pixelBuffer[index] * kernel[ky, kx];      
+                            newG += pixelBuffer[index + 1] * kernel[ky, kx];  
+                            newR += pixelBuffer[index + 2] * kernel[ky, kx];  
                         }
                     }
 
@@ -416,7 +410,6 @@ namespace Project1
                 }
             }
 
-            // Copy result buffer back to bitmap
             System.Runtime.InteropServices.Marshal.Copy(resultBuffer, 0, dstData.Scan0, resultBuffer.Length);
 
             image.UnlockBits(srcData);
@@ -425,12 +418,75 @@ namespace Project1
             return filteredImage;
         }
 
+        private void ApplyMedianFilter()
+        {
+            if (filteredImage == null) return;
+
+            if (!int.TryParse(textBoxMedian.Text, out int n) || n < 3 || n % 2 == 0 || n > 15)
+            {
+                MessageBox.Show("Please enter valid kernel size.");
+                return;
+            }
+
+            int offset = n / 2; 
+            int width = filteredImage.Width;
+            int height = filteredImage.Height;
+
+            BitmapData srcData = filteredImage.LockBits(new Rectangle(0, 0, width, height),
+                ImageLockMode.ReadWrite, PixelFormat.Format24bppRgb);
+
+            int stride = srcData.Stride;
+            byte[] pixelBuffer = new byte[stride * height];
+            byte[] newPixelBuffer = (byte[])pixelBuffer.Clone(); 
+
+            System.Runtime.InteropServices.Marshal.Copy(srcData.Scan0, pixelBuffer, 0, pixelBuffer.Length);
+
+            for (int y = 0; y < height; y++)
+            {
+                for (int x = 0; x < width; x++)
+                {
+                    List<byte> neighborhoodBlue = new List<byte>();
+                    List<byte> neighborhoodGreen = new List<byte>();
+                    List<byte> neighborhoodRed = new List<byte>();
+
+                    for (int dy = -offset; dy <= offset; dy++)
+                    {
+                        for (int dx = -offset; dx <= offset; dx++)
+                        {
+                            int neighborX = Math.Clamp(x + dx, 0, width - 1);
+                            int neighborY = Math.Clamp(y + dy, 0, height - 1);
+                            int index = (neighborY * stride) + (neighborX * 3);
+
+                            neighborhoodBlue.Add(pixelBuffer[index]);       
+                            neighborhoodGreen.Add(pixelBuffer[index + 1]);  
+                            neighborhoodRed.Add(pixelBuffer[index + 2]);    
+                        }
+                    }
+
+                    neighborhoodBlue.Sort();
+                    neighborhoodGreen.Sort();
+                    neighborhoodRed.Sort();
+                    int medianIndex = neighborhoodBlue.Count / 2; 
+
+                    int pixelIndex = (y * stride) + (x * 3);
+                    newPixelBuffer[pixelIndex] = neighborhoodBlue[medianIndex];      
+                    newPixelBuffer[pixelIndex + 1] = neighborhoodGreen[medianIndex];  
+                    newPixelBuffer[pixelIndex + 2] = neighborhoodRed[medianIndex];    
+                }
+            }
+
+            System.Runtime.InteropServices.Marshal.Copy(newPixelBuffer, 0, srcData.Scan0, newPixelBuffer.Length);
+
+            filteredImage.UnlockBits(srcData);
+            imageBoxFiltered.Image = filteredImage;
+        }
+
         private void InitializeFilterGraph()
         {
             points = new List<PointF>
             {
-                new PointF(0, 255),   // Leftmost (Fixed)
-                new PointF(255, 0)    // Rightmost (Fixed)
+                new PointF(0, 255),   
+                new PointF(255, 0)   
             };
 
             pictureBoxFuncGraph.Paint += pictureBoxFuncGraph_Paint;
@@ -483,17 +539,15 @@ namespace Project1
         {
             if (isDragging && selectedPointIndex >= 0)
             {
-                float newX = points[selectedPointIndex].X; // Keep X unchanged for boundary points
+                float newX = points[selectedPointIndex].X;
                 float newY = Math.Clamp(e.Y, 0, 255);
 
-                // Leftmost point (index 0) and rightmost point (last index) can only move up/down
                 if (selectedPointIndex == 0 || selectedPointIndex == points.Count - 1)
                 {
                     points[selectedPointIndex] = new PointF(newX, newY);
                 }
                 else
                 {
-                    // For other points, ensure X remains ordered correctly
                     newX = Math.Clamp(e.X, points[selectedPointIndex - 1].X + 1, points[selectedPointIndex + 1].X - 1);
                     points[selectedPointIndex] = new PointF(newX, newY);
                 }
@@ -516,7 +570,7 @@ namespace Project1
 
         private void btnDeletePoint_Click(object sender, EventArgs e)
         {
-            if (selectedPointIndex > 0 && selectedPointIndex < points.Count - 1) // Prevent deleting endpoints
+            if (selectedPointIndex > 0 && selectedPointIndex < points.Count - 1)
             {
                 points.RemoveAt(selectedPointIndex);
                 selectedPointIndex = -1;
@@ -566,10 +620,10 @@ namespace Project1
 
             points = new List<PointF>
             {
-                new PointF(0, 255),         // Constant at 0 until x1
+                new PointF(0, 255),         
                 new PointF(x1, 255),
-                new PointF(x2, 0),      // Linear increase between (x1,0) and (x2,255)
-                new PointF(255, 0)      // Constant at 255 after x2
+                new PointF(x2, 0),      
+                new PointF(255, 0)      
             };
 
             pictureBoxFuncGraph.Invalidate();
@@ -627,7 +681,6 @@ namespace Project1
         {
             if (points.Count < 2 || filteredImage == null) return;
 
-            // Generate lookup table from graph points
             float[] lookupTable = new float[256];
 
             for (int i = 0; i < points.Count - 1; i++)
@@ -643,7 +696,6 @@ namespace Project1
                 }
             }
 
-            // Lock image for direct pixel manipulation
             BitmapData srcData = filteredImage.LockBits(new Rectangle(0, 0, filteredImage.Width, filteredImage.Height),
                 ImageLockMode.ReadWrite, PixelFormat.Format24bppRgb);
 
@@ -658,13 +710,12 @@ namespace Project1
                 {
                     int index = y * stride + x * 3;
 
-                    pixelBuffer[index] = (byte)lookupTable[pixelBuffer[index]];       // Blue
-                    pixelBuffer[index + 1] = (byte)lookupTable[pixelBuffer[index + 1]]; // Green
-                    pixelBuffer[index + 2] = (byte)lookupTable[pixelBuffer[index + 2]]; // Red
+                    pixelBuffer[index + 2] = (byte)lookupTable[pixelBuffer[index + 2]];
+                    pixelBuffer[index + 1] = (byte)lookupTable[pixelBuffer[index + 1]];
+                    pixelBuffer[index] = (byte)lookupTable[pixelBuffer[index]];       
                 }
             }
 
-            // Copy modified pixels back
             System.Runtime.InteropServices.Marshal.Copy(pixelBuffer, 0, srcData.Scan0, pixelBuffer.Length);
             filteredImage.UnlockBits(srcData);
 
