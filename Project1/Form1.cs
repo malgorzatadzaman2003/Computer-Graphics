@@ -84,9 +84,13 @@ namespace Project1
 
             filteredImage = new Bitmap(originalImage);
 
-            if (checkedListFuncFilters.CheckedItems.Count > 0 || checkedListConvFilters.CheckedItems.Count > 0)
+            var checkedFuncItems = new List<object>(checkedListFuncFilters.CheckedItems.Cast<object>());
+            var checkedConvItems = new List<object>(checkedListConvFilters.CheckedItems.Cast<object>());
+
+
+            if (checkedFuncItems.Count > 0 || checkedConvItems.Count > 0)
             {
-                foreach (var item in checkedListFuncFilters.CheckedItems)
+                foreach (var item in checkedFuncItems)
                 {
                     string filterName = item.ToString();
                     switch (filterName)
@@ -106,13 +110,13 @@ namespace Project1
                     }
                 }
 
-                foreach (var item in checkedListConvFilters.CheckedItems)
+                foreach (var item in checkedConvItems)
                 {
                     string filterName = item.ToString();
                     switch (filterName)
                     {
                         case "Blur":
-                            for (int i = 0; i < 5; i++)  // Apply 3 times for stronger blur
+                            for (int i = 0; i < 5; i++)  // 5 times for stronger blur
                             {
                                 filteredImage = ApplyConvolution(filteredImage, new float[,] {
                                 { 1f/9, 1f/9, 1f/9 },
@@ -159,7 +163,7 @@ namespace Project1
 
                 imageBoxFiltered.Image = filteredImage;
             }
-            else if (checkedListFuncFilters.CheckedItems.Count == 0)
+            else if (checkedFuncItems.Count == 0)
             {
                 ApplyCustomFilter();
             }
@@ -186,6 +190,8 @@ namespace Project1
             {
                 for (int x = 0; x < image.Width; x++)
                 {
+                    // y * stride → Moves to the start of the y-th row.
+                    // x * 3 → Moves to the x-th pixel in that row(since each pixel takes 3 bytes).
                     int index = y * stride + x * 3;
 
                     byte r = pixelBuffer[index + 2];
@@ -232,6 +238,7 @@ namespace Project1
                 for (int x = 0; x < image.Width; x++)
                 {
                     int index = y * stride + x * 3;
+
                     byte r = pixelBuffer[index + 2];
                     byte g = pixelBuffer[index + 1];
                     byte b = pixelBuffer[index];
@@ -281,6 +288,7 @@ namespace Project1
                 for (int x = 0; x < image.Width; x++)
                 {
                     int index = y * stride + x * 3;
+
                     byte r = pixelBuffer[index + 2];
                     byte g = pixelBuffer[index + 1];
                     byte b = pixelBuffer[index];
@@ -337,6 +345,7 @@ namespace Project1
                 for (int x = 0; x < image.Width; x++)
                 {
                     int index = y * stride + x * 3;
+
                     byte r = pixelBuffer[index + 2];
                     byte g = pixelBuffer[index + 1];
                     byte b = pixelBuffer[index];
@@ -531,19 +540,17 @@ namespace Project1
             {
                 points = new List<PointF>
                 {
-                    new PointF(0, 255),        // Constant at 0
-                    new PointF(-brightnessOffset, 255),   // Flat section until xStart
-                    new PointF(255, -brightnessOffset)    // Then increases to (255, yEnd)
+                    new PointF(0, 255),        
+                    new PointF(-brightnessOffset, 255),   
+                    new PointF(255, -brightnessOffset)    
                 };
             }
             else
             {
                 points = new List<PointF>
                 {
-                    // First part: Linear increase until it reaches 255
                     new PointF(0, 255 - brightnessOffset),
                     new PointF(255 - brightnessOffset, 0),
-                    // Second part: Horizontal line from (xLimit, 0) to (255, 0)
                     new PointF(255, 0)
                 };
             }
@@ -553,9 +560,9 @@ namespace Project1
 
         private void SetContrastGraph(float contrastFactor)
         {
-            float midpoint = 127.5f; // Middle of the range
-            float x1 = Math.Max(0, midpoint - (midpoint / contrastFactor)); // Start of linear section
-            float x2 = Math.Min(255, midpoint + (midpoint / contrastFactor)); // End of linear section
+            float midpoint = 127.5f;
+            float x1 = Math.Max(0, midpoint - (midpoint / contrastFactor));
+            float x2 = Math.Min(255, midpoint + (midpoint / contrastFactor)); 
 
             points = new List<PointF>
             {

@@ -138,7 +138,7 @@
             // 
             checkedListConvFilters.CheckOnClick = true;
             checkedListConvFilters.FormattingEnabled = true;
-            checkedListConvFilters.Items.AddRange(new object[] { "Blur", "Gaussian Blur ", "Sharpen", "Edge Detection ", "Emboss" });
+            checkedListConvFilters.Items.AddRange(new object[] { "Blur", "Gaussian Blur", "Sharpen", "Edge Detection", "Emboss" });
             checkedListConvFilters.Location = new Point(389, 94);
             checkedListConvFilters.Name = "checkedListConvFilters";
             checkedListConvFilters.Size = new Size(209, 92);
@@ -200,6 +200,7 @@
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
+            AutoScroll = true;
             ClientSize = new Size(1902, 1033);
             Controls.Add(btnSaveFilter);
             Controls.Add(btnDeletePoint);
