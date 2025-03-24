@@ -45,17 +45,25 @@
             btnSaveFilter = new Button();
             checkedListMedianFilters = new CheckedListBox();
             textBoxMedian = new TextBox();
+            checkedListGrayscale = new CheckedListBox();
+            numericUpDownRandDithering = new NumericUpDown();
+            checkedListRandomDithering = new CheckedListBox();
+            checkedListKMeans = new CheckedListBox();
+            numericUpDownKMeans = new NumericUpDown();
             ((System.ComponentModel.ISupportInitialize)imageBoxOriginal).BeginInit();
             ((System.ComponentModel.ISupportInitialize)imageBoxFiltered).BeginInit();
             ((System.ComponentModel.ISupportInitialize)pictureBoxFuncGraph).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)numericUpDownRandDithering).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)numericUpDownKMeans).BeginInit();
             SuspendLayout();
             // 
             // imageBoxOriginal
             // 
+            imageBoxOriginal.ImageLocation = "";
             imageBoxOriginal.Location = new Point(58, 297);
             imageBoxOriginal.Name = "imageBoxOriginal";
             imageBoxOriginal.Size = new Size(590, 590);
-            imageBoxOriginal.SizeMode = PictureBoxSizeMode.Zoom;
+            imageBoxOriginal.SizeMode = PictureBoxSizeMode.CenterImage;
             imageBoxOriginal.TabIndex = 0;
             imageBoxOriginal.TabStop = false;
             // 
@@ -74,7 +82,7 @@
             imageBoxFiltered.Location = new Point(731, 297);
             imageBoxFiltered.Name = "imageBoxFiltered";
             imageBoxFiltered.Size = new Size(590, 590);
-            imageBoxFiltered.SizeMode = PictureBoxSizeMode.Zoom;
+            imageBoxFiltered.SizeMode = PictureBoxSizeMode.CenterImage;
             imageBoxFiltered.TabIndex = 2;
             imageBoxFiltered.TabStop = false;
             // 
@@ -203,17 +211,61 @@
             checkedListMedianFilters.CheckOnClick = true;
             checkedListMedianFilters.FormattingEnabled = true;
             checkedListMedianFilters.Items.AddRange(new object[] { "Median Filter" });
-            checkedListMedianFilters.Location = new Point(678, 105);
+            checkedListMedianFilters.Location = new Point(656, 108);
             checkedListMedianFilters.Name = "checkedListMedianFilters";
-            checkedListMedianFilters.Size = new Size(166, 26);
+            checkedListMedianFilters.Size = new Size(124, 26);
             checkedListMedianFilters.TabIndex = 19;
             // 
             // textBoxMedian
             // 
-            textBoxMedian.Location = new Point(697, 147);
+            textBoxMedian.Location = new Point(801, 107);
             textBoxMedian.Name = "textBoxMedian";
-            textBoxMedian.Size = new Size(125, 27);
+            textBoxMedian.Size = new Size(94, 27);
             textBoxMedian.TabIndex = 20;
+            // 
+            // checkedListGrayscale
+            // 
+            checkedListGrayscale.CheckOnClick = true;
+            checkedListGrayscale.FormattingEnabled = true;
+            checkedListGrayscale.Items.AddRange(new object[] { "Grayscale" });
+            checkedListGrayscale.Location = new Point(656, 151);
+            checkedListGrayscale.Name = "checkedListGrayscale";
+            checkedListGrayscale.Size = new Size(124, 26);
+            checkedListGrayscale.TabIndex = 21;
+            // 
+            // numericUpDownRandDithering
+            // 
+            numericUpDownRandDithering.Location = new Point(1117, 107);
+            numericUpDownRandDithering.Name = "numericUpDownRandDithering";
+            numericUpDownRandDithering.Size = new Size(88, 27);
+            numericUpDownRandDithering.TabIndex = 22;
+            // 
+            // checkedListRandomDithering
+            // 
+            checkedListRandomDithering.CheckOnClick = true;
+            checkedListRandomDithering.FormattingEnabled = true;
+            checkedListRandomDithering.Items.AddRange(new object[] { "Random Dithering" });
+            checkedListRandomDithering.Location = new Point(936, 109);
+            checkedListRandomDithering.Name = "checkedListRandomDithering";
+            checkedListRandomDithering.Size = new Size(158, 26);
+            checkedListRandomDithering.TabIndex = 23;
+            // 
+            // checkedListKMeans
+            // 
+            checkedListKMeans.CheckOnClick = true;
+            checkedListKMeans.FormattingEnabled = true;
+            checkedListKMeans.Items.AddRange(new object[] { "K-Means" });
+            checkedListKMeans.Location = new Point(936, 151);
+            checkedListKMeans.Name = "checkedListKMeans";
+            checkedListKMeans.Size = new Size(158, 26);
+            checkedListKMeans.TabIndex = 24;
+            // 
+            // numericUpDownKMeans
+            // 
+            numericUpDownKMeans.Location = new Point(1117, 150);
+            numericUpDownKMeans.Name = "numericUpDownKMeans";
+            numericUpDownKMeans.Size = new Size(88, 27);
+            numericUpDownKMeans.TabIndex = 25;
             // 
             // Filters
             // 
@@ -221,6 +273,11 @@
             AutoScaleMode = AutoScaleMode.Font;
             AutoScroll = true;
             ClientSize = new Size(1902, 1033);
+            Controls.Add(numericUpDownKMeans);
+            Controls.Add(checkedListKMeans);
+            Controls.Add(checkedListRandomDithering);
+            Controls.Add(numericUpDownRandDithering);
+            Controls.Add(checkedListGrayscale);
             Controls.Add(textBoxMedian);
             Controls.Add(checkedListMedianFilters);
             Controls.Add(btnSaveFilter);
@@ -244,6 +301,8 @@
             ((System.ComponentModel.ISupportInitialize)imageBoxOriginal).EndInit();
             ((System.ComponentModel.ISupportInitialize)imageBoxFiltered).EndInit();
             ((System.ComponentModel.ISupportInitialize)pictureBoxFuncGraph).EndInit();
+            ((System.ComponentModel.ISupportInitialize)numericUpDownRandDithering).EndInit();
+            ((System.ComponentModel.ISupportInitialize)numericUpDownKMeans).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -267,5 +326,10 @@
         private Button btnSaveFilter;
         private CheckedListBox checkedListMedianFilters;
         private TextBox textBoxMedian;
+        private CheckedListBox checkedListGrayscale;
+        private NumericUpDown numericUpDownRandDithering;
+        private CheckedListBox checkedListRandomDithering;
+        private CheckedListBox checkedListKMeans;
+        private NumericUpDown numericUpDownKMeans;
     }
 }

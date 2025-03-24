@@ -1,4 +1,5 @@
 ﻿using System.Drawing.Imaging;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.Rebar;
 
 namespace Project1
 {
@@ -55,6 +56,24 @@ namespace Project1
                 {
                     checkedListMedianFilters.SetItemChecked(i, false);
                 }
+                textBoxMedian.Text = "";
+
+                for (int i = 0; i < checkedListGrayscale.Items.Count; i++)
+                {
+                    checkedListGrayscale.SetItemChecked(i, false);
+                }
+
+                for (int i = 0; i < checkedListRandomDithering.Items.Count; i++)
+                {
+                    checkedListRandomDithering.SetItemChecked(i, false);
+                }
+                numericUpDownRandDithering.Text = "0";
+
+                for (int i = 0; i < checkedListKMeans.Items.Count; i++)
+                {
+                    checkedListKMeans.SetItemChecked(i, false);
+                }
+                numericUpDownKMeans.Text = "0";
 
                 InitializeFilterGraph();
                 pictureBoxFuncGraph.Invalidate();
@@ -92,9 +111,11 @@ namespace Project1
             var checkedFuncItems = new List<object>(checkedListFuncFilters.CheckedItems.Cast<object>());
             var checkedConvItems = new List<object>(checkedListConvFilters.CheckedItems.Cast<object>());
             var checkedMedianItems = new List<object>(checkedListMedianFilters.CheckedItems.Cast<object>());
+            var checkedGrayscaleItems = new List<object>(checkedListGrayscale.CheckedItems.Cast<object>());
+            var checkedRandDitheringItems = new List<object>(checkedListRandomDithering.CheckedItems.Cast<object>());
+            var checkedKMeansItems = new List<object>(checkedListKMeans.CheckedItems.Cast<object>());
 
-
-            if (checkedFuncItems.Count > 0 || checkedConvItems.Count > 0 || checkedMedianItems.Count > 0)
+            if (checkedFuncItems.Count > 0 || checkedConvItems.Count > 0 || checkedMedianItems.Count > 0 || checkedGrayscaleItems.Count > 0 || checkedRandDitheringItems.Count > 0 || checkedKMeansItems.Count > 0)
             {
                 foreach (var item in checkedFuncItems)
                 {
@@ -174,6 +195,42 @@ namespace Project1
                     {
                         case "Median Filter":
                             ApplyMedianFilter();
+                            ApplyCustomFilter();
+                            break;
+                    }
+                }
+
+                foreach (var item in checkedGrayscaleItems)
+                {
+                    string filterName = item.ToString();
+                    switch (filterName)
+                    {
+                        case "Grayscale":
+                            filteredImage = ConvertToGrayscale(filteredImage);
+                            ApplyCustomFilter();
+                            break;
+                    }
+                }
+
+                foreach (var item in checkedRandDitheringItems)
+                {
+                    string filterName = item.ToString();
+                    switch (filterName)
+                    {
+                        case "Random Dithering":
+                            filteredImage = ApplyRandomDithering(filteredImage);
+                            ApplyCustomFilter();
+                            break;
+                    }
+                }
+
+                foreach (var item in checkedKMeansItems)
+                {
+                    string filterName = item.ToString();
+                    switch (filterName)
+                    {
+                        case "K-Means":
+                            filteredImage = ApplyKMeansQuantization(filteredImage);
                             ApplyCustomFilter();
                             break;
                     }
@@ -481,6 +538,258 @@ namespace Project1
             imageBoxFiltered.Image = filteredImage;
         }
 
+        private Bitmap ConvertToGrayscale(Bitmap image)
+        {
+            Bitmap convertedImage = new Bitmap(image.Width, image.Height);
+
+            BitmapData srcData = image.LockBits(new Rectangle(0, 0, image.Width, image.Height),
+                                        ImageLockMode.ReadOnly, PixelFormat.Format24bppRgb);
+            BitmapData dstData = convertedImage.LockBits(new Rectangle(0, 0, image.Width, image.Height),
+                                                        ImageLockMode.WriteOnly, PixelFormat.Format24bppRgb);
+
+            int stride = srcData.Stride;
+            byte[] pixelBuffer = new byte[stride * image.Height];
+            byte[] resultBuffer = new byte[stride * image.Height];
+
+            System.Runtime.InteropServices.Marshal.Copy(srcData.Scan0, pixelBuffer, 0, pixelBuffer.Length);
+
+            for (int y = 0; y < image.Height; y++)
+            {
+                for (int x = 0; x < image.Width; x++)
+                {
+                    int index = y * stride + x * 3;
+
+                    byte r = pixelBuffer[index + 2];
+                    byte g = pixelBuffer[index + 1];
+                    byte b = pixelBuffer[index];
+
+                    int gray = (int)(0.299 * r + 0.587 * g + 0.114 * b);
+                    byte grayByte = (byte)Math.Clamp(gray, 0, 255);
+
+                    resultBuffer[index] = grayByte;
+                    resultBuffer[index + 1] = grayByte;
+                    resultBuffer[index + 2] = grayByte;
+                }
+            }
+
+            System.Runtime.InteropServices.Marshal.Copy(resultBuffer, 0, dstData.Scan0, resultBuffer.Length);
+
+            image.UnlockBits(srcData);
+            convertedImage.UnlockBits(dstData);
+
+            return convertedImage;
+        }
+
+        private Bitmap ApplyRandomDithering(Bitmap image)
+        {
+            if (!int.TryParse(numericUpDownRandDithering.Text, out int numShades) || numShades <= 0)
+            {
+                MessageBox.Show("Please enter valid number of shades.");
+            }
+
+            Bitmap filteredImage = new Bitmap(image.Width, image.Height);
+
+            BitmapData srcData = image.LockBits(new Rectangle(0, 0, image.Width, image.Height),
+                                                ImageLockMode.ReadOnly, PixelFormat.Format24bppRgb);
+            BitmapData dstData = filteredImage.LockBits(new Rectangle(0, 0, image.Width, image.Height),
+                                                       ImageLockMode.WriteOnly, PixelFormat.Format24bppRgb);
+
+            int stride = srcData.Stride;
+            byte[] pixelBuffer = new byte[stride * image.Height];
+            byte[] resultBuffer = new byte[stride * image.Height];
+
+            System.Runtime.InteropServices.Marshal.Copy(srcData.Scan0, pixelBuffer, 0, pixelBuffer.Length);
+
+            Random rand = new Random();
+            int maxValue = 255;
+            int step = maxValue / numShades;
+
+            for(int y = 0; y < image.Height; y++)
+            {
+                for(int x = 0; x < image.Width; x++)
+                {
+                    int index = y * stride + x * 3;
+
+                    byte r = pixelBuffer[index + 2];
+                    byte g = pixelBuffer[index + 1];
+                    byte b = pixelBuffer[index];
+
+                    // applying didthering to each chanel
+                    r = (byte)((r / step) * step + rand.Next(step));
+                    g = (byte)((g / step) * step + rand.Next(step));
+                    b = (byte)((b / step) * step + rand.Next(step));
+
+                    // values within valid color range
+                    r = (byte)Math.Min(maxValue, Math.Max(0, (int)r));
+                    g = (byte)Math.Min(maxValue, Math.Max(0, (int)g));
+                    b = (byte)Math.Min(maxValue, Math.Max(0, (int)b));
+
+                    resultBuffer[index] = b;
+                    resultBuffer[index + 1] = g;
+                    resultBuffer[index + 2] = r;
+
+                }
+            }
+
+            System.Runtime.InteropServices.Marshal.Copy(resultBuffer, 0, dstData.Scan0, resultBuffer.Length);
+
+            image.UnlockBits(srcData);
+            filteredImage.UnlockBits(dstData);
+
+            return filteredImage;
+        }
+
+        private List<Color> InitializeCentroids(int k)
+        {
+            Random rand = new Random();
+            List<Color> centroids = new List<Color>();
+
+            for(int i = 0; i < k; i++)
+            {
+                centroids.Add(Color.FromArgb(rand.Next(256), rand.Next(256), rand.Next(256)));
+            }
+
+            return centroids;
+        }
+
+        private int GetClosestCentroid(Color color, List<Color> centroids)
+        {
+            int closestIndex = 0;
+            double closestDistance = double.MaxValue;
+
+            for(int i = 0; i < centroids.Count; i++)
+            {
+                double distance = GetColorDistance(color, centroids[i]);
+
+                if(distance < closestDistance)
+                {
+                    closestDistance = distance;
+                    closestIndex = i;
+                }
+            }
+
+            return closestIndex;
+        }
+
+        private double GetColorDistance(Color color1, Color color2)
+        {
+            return Math.Sqrt(Math.Pow(color1.R - color2.R, 2) + Math.Pow(color1.G - color2.G, 2) + Math.Pow(color1.B - color2.B, 2));
+        }
+
+        private Color GetAverageColor(List<Color> colors)
+        {
+            int r = 0, g = 0, b = 0;
+
+            foreach(var color in colors)
+            {
+                r += color.R;
+                g += color.G;
+                b += color.B;
+            }
+
+            int count = colors.Count;
+            Color avgColor = Color.FromArgb(r / count, g / count, b / count);
+
+            return avgColor;
+        }
+
+        private Bitmap ApplyKMeansQuantization(Bitmap image)
+        {
+            if (!int.TryParse(numericUpDownKMeans.Text, out int k) || k <= 0)
+            {
+                MessageBox.Show("Please enter valid number of shades.");
+            }
+
+            Bitmap filteredImage = new Bitmap(image.Width, image.Height);
+
+            BitmapData srcData = image.LockBits(new Rectangle(0, 0, image.Width, image.Height),
+                                                ImageLockMode.ReadOnly, PixelFormat.Format24bppRgb);
+            BitmapData dstData = filteredImage.LockBits(new Rectangle(0, 0, image.Width, image.Height),
+                                                       ImageLockMode.WriteOnly, PixelFormat.Format24bppRgb);
+
+            int stride = srcData.Stride;
+            byte[] pixelBuffer = new byte[stride * image.Height];
+            byte[] resultBuffer = new byte[stride * image.Height];
+
+            System.Runtime.InteropServices.Marshal.Copy(srcData.Scan0, pixelBuffer, 0, pixelBuffer.Length);
+
+            List<Color> colors = new List<Color>();
+            // EXTRACTING colors from the image
+            for (int y = 0; y < image.Height; y++)
+            {
+                for (int x = 0; x < image.Width; x++)
+                {
+                    int index = y * stride + x * 3;
+
+                    byte r = pixelBuffer[index + 2];
+                    byte g = pixelBuffer[index + 1];
+                    byte b = pixelBuffer[index];
+
+                    colors.Add(Color.FromArgb(r, g, b));
+                }
+            }
+
+            // INITIALIZING k centroids randomly
+            List<Color> centroids = InitializeCentroids(k);
+            bool hasChanged;
+
+            // K-Means CLUSTERING process
+            do
+            {
+                hasChanged = false;
+                List<List<Color>> clusters = new List<List<Color>>();
+                for (int i = 0; i < k; i++)
+                {
+                    clusters.Add(new List<Color>());
+                }
+
+                // assign each color to the nearest centroid
+                foreach (var color in colors)
+                {
+                    int closestCentroidIndex = GetClosestCentroid(color, centroids);
+                    clusters[closestCentroidIndex].Add(color);
+                }
+
+                // Recalculate centroids
+                for (int i = 0; i < k; i++)
+                {
+                    if (clusters[i].Count > 0)
+                    {
+                        Color newCentroid = GetAverageColor(clusters[i]);
+                        if (!newCentroid.Equals(centroids[i])) hasChanged = true;
+                        centroids[i] = newCentroid;
+                    }
+                }
+
+            } while (hasChanged);
+
+            // Assign each pixel to the closest centroid
+            for (int y = 0; y < image.Height; y++)
+            {
+                for (int x = 0; x < image.Width; x++)
+                {
+                    int index = y * stride + x * 3;
+                    byte r = pixelBuffer[index + 2];
+                    byte g = pixelBuffer[index + 1];
+                    byte b = pixelBuffer[index];
+
+                    // Find the closest centroid for this pixel
+                    int closestCentroidIndex = GetClosestCentroid(Color.FromArgb(r, g, b), centroids);
+                    Color closestCentroid = centroids[closestCentroidIndex];
+
+                    resultBuffer[index] = closestCentroid.B;
+                    resultBuffer[index + 1] = closestCentroid.G;
+                    resultBuffer[index + 2] = closestCentroid.R;
+                }
+            }
+
+            System.Runtime.InteropServices.Marshal.Copy(resultBuffer, 0, dstData.Scan0, resultBuffer.Length);
+
+            image.UnlockBits(srcData);
+            filteredImage.UnlockBits(dstData);
+
+            return filteredImage;
+        }
         private void InitializeFilterGraph()
         {
             points = new List<PointF>
