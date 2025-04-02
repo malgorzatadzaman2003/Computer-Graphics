@@ -50,11 +50,18 @@
             checkedListRandomDithering = new CheckedListBox();
             checkedListKMeans = new CheckedListBox();
             numericUpDownKMeans = new NumericUpDown();
+            imageBoxH = new PictureBox();
+            imageBoxS = new PictureBox();
+            imageBoxV = new PictureBox();
+            checkedListRGBtoHSV = new CheckedListBox();
             ((System.ComponentModel.ISupportInitialize)imageBoxOriginal).BeginInit();
             ((System.ComponentModel.ISupportInitialize)imageBoxFiltered).BeginInit();
             ((System.ComponentModel.ISupportInitialize)pictureBoxFuncGraph).BeginInit();
             ((System.ComponentModel.ISupportInitialize)numericUpDownRandDithering).BeginInit();
             ((System.ComponentModel.ISupportInitialize)numericUpDownKMeans).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)imageBoxH).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)imageBoxS).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)imageBoxV).BeginInit();
             SuspendLayout();
             // 
             // imageBoxOriginal
@@ -164,7 +171,7 @@
             // 
             // pictureBoxFuncGraph
             // 
-            pictureBoxFuncGraph.Location = new Point(1425, 466);
+            pictureBoxFuncGraph.Location = new Point(1413, 631);
             pictureBoxFuncGraph.Name = "pictureBoxFuncGraph";
             pictureBoxFuncGraph.Size = new Size(256, 256);
             pictureBoxFuncGraph.TabIndex = 15;
@@ -176,7 +183,7 @@
             // 
             // btnAddPoint
             // 
-            btnAddPoint.Location = new Point(1714, 498);
+            btnAddPoint.Location = new Point(1714, 668);
             btnAddPoint.Name = "btnAddPoint";
             btnAddPoint.Size = new Size(117, 42);
             btnAddPoint.TabIndex = 16;
@@ -186,7 +193,7 @@
             // 
             // btnDeletePoint
             // 
-            btnDeletePoint.Location = new Point(1714, 569);
+            btnDeletePoint.Location = new Point(1714, 748);
             btnDeletePoint.Name = "btnDeletePoint";
             btnDeletePoint.Size = new Size(117, 42);
             btnDeletePoint.TabIndex = 17;
@@ -196,7 +203,7 @@
             // 
             // btnSaveFilter
             // 
-            btnSaveFilter.Location = new Point(1714, 640);
+            btnSaveFilter.Location = new Point(1714, 823);
             btnSaveFilter.Name = "btnSaveFilter";
             btnSaveFilter.Size = new Size(117, 42);
             btnSaveFilter.TabIndex = 18;
@@ -265,12 +272,53 @@
             numericUpDownKMeans.Size = new Size(88, 27);
             numericUpDownKMeans.TabIndex = 25;
             // 
+            // imageBoxH
+            // 
+            imageBoxH.Location = new Point(1425, 22);
+            imageBoxH.Name = "imageBoxH";
+            imageBoxH.Size = new Size(176, 164);
+            imageBoxH.SizeMode = PictureBoxSizeMode.Zoom;
+            imageBoxH.TabIndex = 26;
+            imageBoxH.TabStop = false;
+            // 
+            // imageBoxS
+            // 
+            imageBoxS.Location = new Point(1425, 208);
+            imageBoxS.Name = "imageBoxS";
+            imageBoxS.Size = new Size(176, 164);
+            imageBoxS.SizeMode = PictureBoxSizeMode.Zoom;
+            imageBoxS.TabIndex = 27;
+            imageBoxS.TabStop = false;
+            // 
+            // imageBoxV
+            // 
+            imageBoxV.Location = new Point(1425, 395);
+            imageBoxV.Name = "imageBoxV";
+            imageBoxV.Size = new Size(176, 164);
+            imageBoxV.SizeMode = PictureBoxSizeMode.Zoom;
+            imageBoxV.TabIndex = 28;
+            imageBoxV.TabStop = false;
+            // 
+            // checkedListRGBtoHSV
+            // 
+            checkedListRGBtoHSV.CheckOnClick = true;
+            checkedListRGBtoHSV.FormattingEnabled = true;
+            checkedListRGBtoHSV.Items.AddRange(new object[] { "RGB->HSV and HSV->RGB" });
+            checkedListRGBtoHSV.Location = new Point(1661, 49);
+            checkedListRGBtoHSV.Name = "checkedListRGBtoHSV";
+            checkedListRGBtoHSV.Size = new Size(158, 26);
+            checkedListRGBtoHSV.TabIndex = 29;
+            // 
             // Filters
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             AutoScroll = true;
             ClientSize = new Size(1902, 1033);
+            Controls.Add(checkedListRGBtoHSV);
+            Controls.Add(imageBoxV);
+            Controls.Add(imageBoxS);
+            Controls.Add(imageBoxH);
             Controls.Add(numericUpDownKMeans);
             Controls.Add(checkedListKMeans);
             Controls.Add(checkedListRandomDithering);
@@ -301,6 +349,9 @@
             ((System.ComponentModel.ISupportInitialize)pictureBoxFuncGraph).EndInit();
             ((System.ComponentModel.ISupportInitialize)numericUpDownRandDithering).EndInit();
             ((System.ComponentModel.ISupportInitialize)numericUpDownKMeans).EndInit();
+            ((System.ComponentModel.ISupportInitialize)imageBoxH).EndInit();
+            ((System.ComponentModel.ISupportInitialize)imageBoxS).EndInit();
+            ((System.ComponentModel.ISupportInitialize)imageBoxV).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -329,5 +380,9 @@
         private CheckedListBox checkedListRandomDithering;
         private CheckedListBox checkedListKMeans;
         private NumericUpDown numericUpDownKMeans;
+        private PictureBox imageBoxH;
+        private PictureBox imageBoxS;
+        private PictureBox imageBoxV;
+        private CheckedListBox checkedListRGBtoHSV;
     }
 }

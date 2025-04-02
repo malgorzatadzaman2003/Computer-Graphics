@@ -115,7 +115,10 @@ namespace Project1
             var checkedRandDitheringItems = new List<object>(checkedListRandomDithering.CheckedItems.Cast<object>());
             var checkedKMeansItems = new List<object>(checkedListKMeans.CheckedItems.Cast<object>());
 
-            if (checkedFuncItems.Count > 0 || checkedConvItems.Count > 0 || checkedMedianItems.Count > 0 || checkedGrayscaleItems.Count > 0 || checkedRandDitheringItems.Count > 0 || checkedKMeansItems.Count > 0)
+            var checkedRGBtoHSVItems = new List<object>(checkedListRGBtoHSV.CheckedItems.Cast<object>());
+
+
+            if (checkedFuncItems.Count > 0 || checkedConvItems.Count > 0 || checkedMedianItems.Count > 0 || checkedGrayscaleItems.Count > 0 || checkedRandDitheringItems.Count > 0 || checkedKMeansItems.Count > 0 || checkedRGBtoHSVItems.Count > 0)
             {
                 foreach (var item in checkedFuncItems)
                 {
@@ -231,6 +234,18 @@ namespace Project1
                     {
                         case "K-Means":
                             filteredImage = ApplyKMeansQuantization(filteredImage);
+                            ApplyCustomFilter();
+                            break;
+                    }
+                }
+
+                foreach (var item in checkedRGBtoHSVItems)
+                {
+                    string filterName = item.ToString();
+                    switch (filterName)
+                    {
+                        case "RGB->HSV and HSV->RGB":
+                            ConvertImageToHSVAndBack(filteredImage);
                             ApplyCustomFilter();
                             break;
                     }
@@ -619,23 +634,24 @@ namespace Project1
                 {
                     int index = y * stride + x * 3;
 
+                    byte r = pixelBuffer[index + 2];
+                    byte g = pixelBuffer[index + 1];
+                    byte b = pixelBuffer[index];
+
                     if (isGrayscale)
                     {
-                        // Grayscale dithering (apply only to the gray channel)
-                        byte gray = pixelBuffer[index];
+                        int gray = (int)(0.299 * r + 0.587 * g + 0.114 * b);
+                        gray = (byte)Math.Clamp(gray, 0, 255);
+
                         gray = (byte)((gray / step) * step + rand.Next(step));
                         gray = (byte)Math.Min(maxValue, Math.Max(0, (int)gray));
 
-                        resultBuffer[index] = gray;
-                        resultBuffer[index + 1] = gray;
-                        resultBuffer[index + 2] = gray;
+                        resultBuffer[index] = (byte)gray;
+                        resultBuffer[index + 1] = (byte)gray;
+                        resultBuffer[index + 2] = (byte)gray;
                     }
                     else
                     {
-                        byte r = pixelBuffer[index + 2];
-                        byte g = pixelBuffer[index + 1];
-                        byte b = pixelBuffer[index];
-
                         // applying didthering to each chanel
                         r = (byte)((r / step) * step + rand.Next(step));
                         g = (byte)((g / step) * step + rand.Next(step));
@@ -756,7 +772,7 @@ namespace Project1
             List<Color> centroids = InitializeCentroids(k);
             bool hasChanged;
 
-            // K-Means CLUSTERING process
+            // K-Means CLUSTERING 
             do
             {
                 hasChanged = false;
@@ -766,7 +782,7 @@ namespace Project1
                     clusters.Add(new List<Color>());
                 }
 
-                // assign each color to the nearest centroid
+                // each color to the nearest centroid
                 foreach (var color in colors)
                 {
                     int closestCentroidIndex = GetClosestCentroid(color, centroids);
@@ -813,6 +829,7 @@ namespace Project1
 
             return filteredImage;
         }
+
         private void InitializeFilterGraph()
         {
             points = new List<PointF>
@@ -1054,6 +1071,147 @@ namespace Project1
             imageBoxFiltered.Image = filteredImage;
         }
 
+
+        public static void RGBtoHSV(Color color, out float H, out float S, out float V)
+        {
+            float r = color.R / 255f;
+            float g = color.G / 255f;
+            float b = color.B / 255f;
+
+            float min = Math.Min(Math.Min(r, g), b);
+            float max = Math.Max(Math.Max(r, g), b);
+            float delta = max - min;
+
+            V = max;
+
+            if (max == 0)
+            {
+                S = 0;
+                H = 0;
+            }
+            else
+            {
+                S = delta / max;
+
+                if (r == max)
+                    H = (g - b) / delta;
+                else if (g == max)
+                    H = (b - r) / delta + 2f;
+                else
+                    H = (r - g) / delta + 4f;
+
+                H *= 60f;
+                if (H < 0)
+                    H += 360f;
+            }
+        }
+
+        public static Color HSVtoRGB(float H, float S, float V)
+        {
+            int i;
+            float f, p, q, t;
+            float r, g, b;
+
+            if (S == 0)
+            {
+                r = g = b = V;
+            }
+            else
+            {
+                H /= 60f;
+                i = (int)Math.Floor(H);
+                f = H - i;
+                p = V * (1 - S);
+                q = V * (1 - f * S);
+                t = V * (1 - (1 - f) * S);
+
+                switch (i)
+                {
+                    case 0:
+                        r = V;
+                        g = t;
+                        b = p;
+                        break;
+                    case 1:
+                        r = q;
+                        g = V;
+                        b = p;
+                        break;
+                    case 2:
+                        r = p;
+                        g = V;
+                        b = t;
+                        break;
+                    case 3:
+                        r = p;
+                        g = q;
+                        b = V;
+                        break;
+                    case 4:
+                        r = t;
+                        g = p;
+                        b = V;
+                        break;
+                    default:
+                        r = V;
+                        g = p;
+                        b = q;
+                        break;
+                }
+            }
+
+            return Color.FromArgb((int)(r * 255), (int)(g * 255), (int)(b * 255));
+        }
+
+        // Function to process the image and display HSV components
+        public void ConvertImageToHSVAndBack(Bitmap originalImage)
+        {
+            Bitmap hsvImage = new Bitmap(originalImage.Width, originalImage.Height);
+            Bitmap hImage = new Bitmap(originalImage.Width, originalImage.Height);
+            Bitmap sImage = new Bitmap(originalImage.Width, originalImage.Height);
+            Bitmap vImage = new Bitmap(originalImage.Width, originalImage.Height);
+
+            // Convert each pixel in the image to HSV
+            for (int x = 0; x < originalImage.Width; x++)
+            {
+                for (int y = 0; y < originalImage.Height; y++)
+                {
+                    Color pixelColor = originalImage.GetPixel(x, y);
+
+                    // Convert RGB to HSV
+                    RGBtoHSV(pixelColor, out float H, out float S, out float V);
+
+                    // Store HSV values as grayscale images
+                    hImage.SetPixel(x, y, Color.FromArgb(
+                        Math.Max(0, Math.Min(255, (int)(H / 360 * 255))),
+                        Math.Max(0, Math.Min(255, (int)(H / 360 * 255))),
+                        Math.Max(0, Math.Min(255, (int)(H / 360 * 255)))
+                    ));
+                    sImage.SetPixel(x, y, Color.FromArgb(
+                        Math.Max(0, Math.Min(255, (int)(S * 255))),
+                        Math.Max(0, Math.Min(255, (int)(S * 255))),
+                        Math.Max(0, Math.Min(255, (int)(S * 255)))
+                    ));
+                    vImage.SetPixel(x, y, Color.FromArgb(
+                        Math.Max(0, Math.Min(255, (int)(V * 255))),
+                        Math.Max(0, Math.Min(255, (int)(V * 255))),
+                        Math.Max(0, Math.Min(255, (int)(V * 255)))
+                    ));
+
+
+                    // Convert back to RGB
+                    Color newColor = HSVtoRGB(H, S, V);
+                    hsvImage.SetPixel(x, y, newColor);
+                }
+            }
+
+            // Display images
+            imageBoxH.Image = hImage;
+            imageBoxS.Image = sImage;
+            imageBoxV.Image = vImage;
+            imageBoxFiltered.Image = hsvImage;
+            imageBoxOriginal.Image = originalImage;
+        }
 
     }
 }
