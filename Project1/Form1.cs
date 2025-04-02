@@ -582,9 +582,18 @@ namespace Project1
 
         private Bitmap ApplyRandomDithering(Bitmap image)
         {
+            var checkedGrayscaleItems = new List<object>(checkedListGrayscale.CheckedItems.Cast<object>());
+            bool isGrayscale = false;
+
+            if(checkedGrayscaleItems.Count > 0)
+            {
+                isGrayscale = true;
+            }
+
             if (!int.TryParse(numericUpDownRandDithering.Text, out int numShades) || numShades <= 0)
             {
                 MessageBox.Show("Please enter valid number of shades.");
+                return image;
             }
 
             Bitmap filteredImage = new Bitmap(image.Width, image.Height);
@@ -610,24 +619,37 @@ namespace Project1
                 {
                     int index = y * stride + x * 3;
 
-                    byte r = pixelBuffer[index + 2];
-                    byte g = pixelBuffer[index + 1];
-                    byte b = pixelBuffer[index];
+                    if (isGrayscale)
+                    {
+                        // Grayscale dithering (apply only to the gray channel)
+                        byte gray = pixelBuffer[index];
+                        gray = (byte)((gray / step) * step + rand.Next(step));
+                        gray = (byte)Math.Min(maxValue, Math.Max(0, (int)gray));
 
-                    // applying didthering to each chanel
-                    r = (byte)((r / step) * step + rand.Next(step));
-                    g = (byte)((g / step) * step + rand.Next(step));
-                    b = (byte)((b / step) * step + rand.Next(step));
+                        resultBuffer[index] = gray;
+                        resultBuffer[index + 1] = gray;
+                        resultBuffer[index + 2] = gray;
+                    }
+                    else
+                    {
+                        byte r = pixelBuffer[index + 2];
+                        byte g = pixelBuffer[index + 1];
+                        byte b = pixelBuffer[index];
 
-                    // values within valid color range
-                    r = (byte)Math.Min(maxValue, Math.Max(0, (int)r));
-                    g = (byte)Math.Min(maxValue, Math.Max(0, (int)g));
-                    b = (byte)Math.Min(maxValue, Math.Max(0, (int)b));
+                        // applying didthering to each chanel
+                        r = (byte)((r / step) * step + rand.Next(step));
+                        g = (byte)((g / step) * step + rand.Next(step));
+                        b = (byte)((b / step) * step + rand.Next(step));
 
-                    resultBuffer[index] = b;
-                    resultBuffer[index + 1] = g;
-                    resultBuffer[index + 2] = r;
+                        // values within valid color range
+                        r = (byte)Math.Min(maxValue, Math.Max(0, (int)r));
+                        g = (byte)Math.Min(maxValue, Math.Max(0, (int)g));
+                        b = (byte)Math.Min(maxValue, Math.Max(0, (int)b));
 
+                        resultBuffer[index] = b;
+                        resultBuffer[index + 1] = g;
+                        resultBuffer[index + 2] = r;
+                    }
                 }
             }
 
@@ -698,6 +720,7 @@ namespace Project1
             if (!int.TryParse(numericUpDownKMeans.Text, out int k) || k <= 0)
             {
                 MessageBox.Show("Please enter valid number of shades.");
+                return image;
             }
 
             Bitmap filteredImage = new Bitmap(image.Width, image.Height);

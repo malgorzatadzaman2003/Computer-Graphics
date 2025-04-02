@@ -63,7 +63,6 @@
             imageBoxOriginal.Location = new Point(58, 297);
             imageBoxOriginal.Name = "imageBoxOriginal";
             imageBoxOriginal.Size = new Size(590, 590);
-            imageBoxOriginal.SizeMode = PictureBoxSizeMode.CenterImage;
             imageBoxOriginal.TabIndex = 0;
             imageBoxOriginal.TabStop = false;
             // 
@@ -82,7 +81,6 @@
             imageBoxFiltered.Location = new Point(731, 297);
             imageBoxFiltered.Name = "imageBoxFiltered";
             imageBoxFiltered.Size = new Size(590, 590);
-            imageBoxFiltered.SizeMode = PictureBoxSizeMode.CenterImage;
             imageBoxFiltered.TabIndex = 2;
             imageBoxFiltered.TabStop = false;
             // 
